@@ -1,0 +1,64 @@
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+        release {
+            storeFile file('test.alias.jks')
+            storePassword '123654789'
+            keyAlias 'test.alias'
+            keyPassword '123654789'
+        }
+    }
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.superman.multichannel"
+        minSdkVersion 14
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //配置自定义打包名称
+            applicationVariants.all { variant ->
+                variant.outputs.all {
+                    def fileName
+                    def date = new Date()
+                    def formattedDate = date.format('yyyyMMdd_HHmm')
+                    if (variant.buildType.name.equals('release')) {
+                        fileName = "demorelease_${variant.mergedFlavor.versionName}_${formattedDate}.apk"
+                    } else if (variant.buildType.name.equals('debug')) {
+                        fileName = "demodebug_${variant.mergedFlavor.versionName}_${formattedDate}.apk"
+                    }
+                    outputFileName = fileName;
+                }
+            }
+        }
+    }
+    //定义一个应用的自定义构建版本
+    //一个单一的项目可以同时定义多个不同的 flavor 来改变应用的输出。
+    // productFlavors 这个概念是为了解决不同的版本之间的差异非常小的情况，通常用于区分同一个应用的不同渠道/客户等，可包含少量业务功能差别。
+    // productFlavors 中的 flavor 不能跟 buildType 中的一样,否则会报: "ProductFlavor names cannot collide with BuildType names"
+    productFlavors {
+        free {//debug版本
+            applicationId "com.superman.multichannel.free"
+            flavorDimensions "versionCode"
+        }
+        paid {//发布版本
+            applicationId "com.superman.multichannel.paid"
+            flavorDimensions "versionCode"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
