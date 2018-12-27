@@ -2,11 +2,16 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
+       // 为了提高安全性，我们还可以把那四个属性作为变量配置在主工程的gradle.propreties，然后在build.gradle引用变量就可以了
         release {
-            storeFile file('test.alias.jks')
-            storePassword '123654789'
-            keyAlias 'test.alias'
-            keyPassword '123654789'
+            storeFile file(KEYSTORE_FILE)
+            storePassword KEYSTORE_PASSWORD
+            keyAlias KEY_ALIAS
+            keyPassword KEY_PASSWORD
+//            storeFile file('test.alias.jks')
+//            storePassword '123654789'
+//            keyAlias 'test.alias'
+//            keyPassword '123654789'
         }
     }
     compileSdkVersion 26
